@@ -1,30 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addPost } from '../../app/features/posts/postsSlice';
-import { allUsers } from '../../app/features/users/usersSlice';
+import { allUsers, fetchUsers } from '../../app/features/users/usersSlice';
 
 const PostForm = () => {
-    const users = useSelector(allUsers);
     const dispatch = useDispatch();
+    const users = useSelector(allUsers);
+
     const [title, setTitle] = useState('');
-    const [user, setUser] = useState(users[0].name)
+    
+    const [user, setUser] = useState('');
     const [content, setContent] = useState('');
 
-   
+    useEffect(() => {
+        dispatch(fetchUsers());
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (users.length > 0) {
+            setUser(users[0].name);
+        }
+    }, [users]);
 
     const handleAddPost = (e) => {
-        e.preventDefault()
-        dispatch(addPost({'title': title, 'content': content, 'userId': user}))
-        setTitle('')
-        setUser('')
-        setContent('')
-    }
+        e.preventDefault();
+        dispatch(addPost({ title, content, userName: user }));
+        setTitle('');
+        setUser('');
+        setContent('');
+    };
 
     return (
-        <div className="flex max-w-[900px] justify-center text-black items-center min-h-screen">
-            <div className="w-full p-8 bg-white rounded-lg border-[1px]">
+        <div className="flex text-black">
+            <div className="p-8 bg-white rounded-lg border-[1px]">
                 <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">Add a New Post</h2>
-                <form className="flex flex-col space-y-4">
+                <form className="flex w-full flex-col space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Post Title</label>
                         <input
@@ -37,11 +47,13 @@ const PostForm = () => {
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700">Author</label>
-                        <select value={user} onChange={(e) => setUser(e.target.value)}
+                        <select
+                            value={user}
+                            onChange={(e) => setUser(e.target.value)}
                             className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                         >
-                            {users.map((user, index) => (
-                                <option key={index}>{user.name}</option>
+                            {users.map((user) => (
+                                <option key={user.id} value={user.name}>{user.name}</option>
                             ))}
                         </select>
                     </div>

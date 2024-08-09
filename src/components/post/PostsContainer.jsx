@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import PostCard from './PostCard';
 import { allPosts, getPostError, getPostStatus, fetchPosts } from '../../app/features/posts/postsSlice';
+import Spinner from '../Spinner';
 
 const PostsContainer = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,7 @@ const PostsContainer = () => {
   }, [status, dispatch]);
 
   if (status === 'loading') {
-    content = <p>Loading...</p>;
+    content = <Spinner />;
   } else if (status === 'succeeded') {
     content = posts.map((post) => (
       <PostCard key={post.id} postData={post} />
@@ -30,7 +31,7 @@ const PostsContainer = () => {
   }
 
   return (
-    <div className=''>
+    <div className='flex flex-wrap gap-[1rem] max-w-[1200px]'>
       {content}
     </div>
   );

@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux'
 import { addReaction } from '../../app/features/posts/postsSlice';
 
 const PostCard = ({postData}) => {
+    // console.log('Post from Card Comp', postData)
 
     const reactionEmojiArray = [
         { emoji: '👍', name: 'thumbsUp' },
@@ -23,7 +24,7 @@ const PostCard = ({postData}) => {
         <h2 className="title text-[1.3rem] font-[500]">{postData.title}</h2>
         <p className="post__content">{postData.content}</p>
         <p className="post__owner-time flex items-center gap-[.5rem]">
-            <span className="post__owner">Post by <span className='font-[500]'>{postData.userId}</span></span>
+            <span className="post__owner">Post by <span className='font-[500]'>{postData.userName}</span></span>
             <span className="time">{postData.date}</span>
         </p>
         <div className="reaction flex items-center gap-[1rem]">
