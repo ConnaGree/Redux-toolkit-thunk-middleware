@@ -2,11 +2,13 @@ import { createSlice, nanoid, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const POSTS_URL = 'https://jsonplaceholder.typicode.com/posts';
+const USERS_URL = 'https://jsonplaceholder.typicode.com/users'
 
 const initialState = {
     posts: [],
     status: 'idle',
-    error: null
+    error: null,
+    users: []
 };
 
 export const fetchPosts = createAsyncThunk('posts/fetchedPosts', async () => {
@@ -19,6 +21,14 @@ export const fetchPosts = createAsyncThunk('posts/fetchedPosts', async () => {
     }
 })
 
+export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
+    try {
+        response = await axios.get(USERS_URL)
+        return response.data
+    } catch (err) {
+        throw new Error(err.message)
+    }
+})
 
 
 const postSlice = createSlice({
@@ -26,12 +36,13 @@ const postSlice = createSlice({
     initialState,
     reducers: {
         addPost: (state, action) => {
+
             state.posts.unshift({
                 id: nanoid(),
                 title: action.payload.title,
                 content: action.payload.content,
                 date: new Date().toISOString(),
-                userId: action.payload.userId,
+                userName: action.payload.userName,
                 reactions: {
                     thumbsUp: 0,
                     wow: 0,
@@ -51,22 +62,29 @@ const postSlice = createSlice({
     },
     extraReducers(builder) {
         builder
+        .addCase(fetchUsers.fulfilled, (state, action) => {
+            state.users = action.payload
+        })
         .addCase(fetchPosts.pending, (state) => {
             state.status = 'loading';
         })
         .addCase(fetchPosts.fulfilled, (state, action) => {
             state.status = 'succeeded';
-            const loadedPosts = action.payload.map(post => ({
-                ...post,
-                date: new Date().toISOString(), // Or format it as needed
-                reactions: {
-                    thumbsUp: 0,
-                    wow: 0,
-                    heart: 0,
-                    rocket: 0,
-                    coffee: 0
+            const loadedPosts = action.payload.map((post) => {
+                const user = state.users.find(user => user.id === post.userId)
+                return {
+                    ...post,
+                    userName: user ? user.name : 'Unknown Author',
+                    date: new Date().toISOString(),
+                    reactions: {
+                        thumbsUp: 0,
+                        wow: 0,
+                        heart: 0,
+                        rocket: 0,
+                        coffee: 0
+                    }
                 }
-            }));
+            })
             state.posts = loadedPosts; // Directly assign the array
         })
         .addCase(fetchPosts.rejected, (state, action) => {

@@ -15,12 +15,13 @@ const initialState = {
 export const fetchUsers = createAsyncThunk('users/fetchUsers', async () => {
     try {
         const response = await axios.get(USERS_URL)
-        consosle.log(response)
         return response.data
     } catch (err) {
         throw new Error(err.message)
     }
 })
+
+console.log(fetchUsers)
 
 // Create a slice of the Redux store for users
 const userSlice = createSlice({
@@ -32,7 +33,6 @@ const userSlice = createSlice({
     extraReducers (builder) {
         builder
         .addCase(fetchUsers.fulfilled, (state, action) => {
-
             state.users = action.payload
         } )
     }

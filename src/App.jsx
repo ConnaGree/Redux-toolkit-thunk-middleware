@@ -6,7 +6,7 @@ import PostsContainer from "./components/post/PostsContainer"
 function App() {
   return (
     <Provider store={store}>
-      <main className=" w-full flex flex-col items-center bg-[#1D2143] text-white">
+      <main className=" w-full flex flex-col justify-center gap-[2rem] items-center bg-[#040934] text-white">
         <PostForm />
         <PostsContainer />
       </main>
